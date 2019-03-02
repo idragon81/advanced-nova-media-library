@@ -120,6 +120,16 @@ Images::make('Image 1', 'img1')
     });
 ```
 
+## Responsive images
+
+If you want to use responsive image functionality from the [Spatie MediaLibrary](https://docs.spatie.be/laravel-medialibrary/v7/responsive-images/getting-started-with-responsive-images), you can use the `withResponsiveImages()` function on the model.
+
+```php
+Images::make('Image 1', 'img1')
+    ->withResponsiveImages();
+
+```
+
 ## Custom properties
 
 ![Custom properties](https://raw.githubusercontent.com/ebess/advanced-nova-media-library/master/docs/custom-properties.gif)
@@ -133,8 +143,15 @@ Images::make('Gallery')
     
 Files::make('Multiple files', 'multiple_files')->multiple()
     ->customPropertiesFields([
-       Boolean::make('Active'),
-       Markdown::make('Description'),
+        Boolean::make('Active'),
+        Markdown::make('Description'),
+    ]);
+    
+// custom properties without user input
+Files::make('Multiple files', 'multiple_files')->multiple()
+    ->customProperties([
+        'foo' => auth()->user()->foo,
+        'bar' => $api->getNeededData(),
     ]);
 ```
 

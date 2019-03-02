@@ -17,6 +17,8 @@ class Media extends Field
     protected $setNameCallback;
     protected $serializeMediaCallback;
     protected $customPropertiesFields = [];
+    protected $customProperties = [];
+    protected $responsive = false;
 
     protected $singleMediaRules = [];
 
@@ -39,6 +41,13 @@ class Media extends Field
         $this->customPropertiesFields = collect($customPropertiesFields);
 
         return $this->withMeta(compact('customPropertiesFields'));
+    }
+    
+    public function customProperties(array $customProperties): self
+    {
+        $this->customProperties = $customProperties;
+
+        return $this;
     }
 
     public function serializeMediaUsing(callable $serializeMediaUsing): self
@@ -117,7 +126,11 @@ class Media extends Field
             ->filter(function ($value) {
                 return $value instanceof UploadedFile;
             })->map(function (UploadedFile $file, int $index) use ($request, $model, $collection) {
-                $media = $model->addMedia($file);
+                $media = $model->addMedia($file)->withCustomProperties($this->customProperties);
+
+                if($this->responsive) {
+                    $media->withResponsiveImages();
+                }
 
                 if (is_callable($this->setFileNameCallback)) {
                     $media->setFileName(
@@ -224,6 +237,20 @@ class Media extends Field
         }
 
         return $media->toArray();
+    }
+
+    /**
+     * Set the responsive mode, which enables the creation of responsive images on upload
+     *
+     * @param boolean $responsive
+     *
+     * @return $this
+     */
+    public function withResponsiveImages($responsive = true)
+    {
+        $this->responsive = $responsive;
+
+        return $this;
     }
 
     /**
